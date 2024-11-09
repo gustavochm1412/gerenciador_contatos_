@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:temperos_app/services/contatos_api.dart';
 
 class AdicionarContatoScreen extends StatefulWidget {
   const AdicionarContatoScreen({super.key});
@@ -27,14 +28,28 @@ class _AdicionarContatoScreenState extends State<AdicionarContatoScreen> {
   ];
   String? _tipoSelecionado;
 
-  void _adicionarContato() {
+  void _adicionarContato() async {
     if (_nomeController.text.isNotEmpty &&
         _emailController.text.isNotEmpty &&
         _tipoSelecionado != null &&
         _enderecoController.text.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Contato adicionado com sucesso!')),
-      );
+      await _requisitionService
+          .save(
+        nome: _nomeController.text,
+        email: _emailController.text,
+        tipo: _tipoSelecionado!,
+        endereco: _enderecoController.text,
+      )
+          .then((response) {
+        if (response.statusCode == 201) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Contato adicionado com sucesso!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      });
       Navigator.pushNamed(context, '/listaContatos');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -42,6 +57,8 @@ class _AdicionarContatoScreenState extends State<AdicionarContatoScreen> {
       );
     }
   }
+
+  final RequisitionService _requisitionService = RequisitionService();
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +99,9 @@ class _AdicionarContatoScreenState extends State<AdicionarContatoScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _adicionarContato,
+              onPressed: () async {
+                _adicionarContato();
+              },
               child: const Text('Adicionar Contato'),
             ),
           ],

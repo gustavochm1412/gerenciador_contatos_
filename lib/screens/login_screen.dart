@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,7 +13,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login() {
     if (_emailController.text.isNotEmpty && _senhaController.text.isNotEmpty) {
-      // For now, just navigate to the dashboard as this is a local mock setup
       Navigator.pushNamed(context, '/dashboard');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

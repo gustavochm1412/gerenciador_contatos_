@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:temperos_app/models/contato.dart';
+import 'package:temperos_app/screens/detalhes_contato_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/adicionar_contato_screen.dart';
 import 'screens/lista_contatos_screen.dart';
-import 'screens/detalhes_contato_screen.dart';
 import 'screens/editar_contato_screen.dart';
 
 void main() {
@@ -29,10 +30,9 @@ class ContatosApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/listaContatos': (context) => const ListaContatosScreen(),
         '/adicionarContato': (context) => const AdicionarContatoScreen(),
-        '/detalhesContato': (context) =>
-            const DetalhesContatoScreen(contato: {}),
+        '/detalhesContato': (context) => const DetalhesContatoScreen(),
         '/editarContato': (context) =>
-            EditarContatoScreen(contato: {}, onSave: (contato) {}),
+            EditarContatoScreen(contato: Contato(), onSave: (contato) {}),
       },
     );
   }

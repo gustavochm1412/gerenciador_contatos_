@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'detalhes_contato_screen.dart';
-import 'editar_contato_screen.dart';
+import 'package:temperos_app/models/contato.dart';
+import 'package:temperos_app/screens/editar_contato_screen.dart';
+import 'package:temperos_app/services/contatos_api.dart';
 import 'adicionar_contato_screen.dart';
 
 class ListaContatosScreen extends StatefulWidget {
@@ -11,37 +12,39 @@ class ListaContatosScreen extends StatefulWidget {
 }
 
 class _ListaContatosScreenState extends State<ListaContatosScreen> {
-  List<Map<String, dynamic>> contatos = [
-    {
-      'nome': 'Gustavo Mesquita',
-      'Tipo': 'Primo',
-      'E-mail': 'Gustavoteste@gmail.com',
-      'Endereço': 'Rua HELLO WORD, 123',
-    },
-    {
-      'nome': 'Lucas Calixto',
-      'Tipo': 'Amigo',
-      'E-mail': 'Lucasteste@gmail.com',
-      'Endereço': 'Rua WORD, 123',
-    },
-    {
-      'nome': 'Vitor Eije',
-      'Tipo': 'Amigo',
-      'E-mail': 'Vitorteste@gmail.com',
-      'Endereço': 'Rua HELLO, 123',
-    },
-  ];
+  List<Contato> contatos = [];
 
-  void _abrirDetalhes(Map<String, dynamic> contato) {
-    Navigator.push(
+  @override
+  void initState() {
+    super.initState();
+    fetch();
+  }
+
+  final RequisitionService _requisitionService = RequisitionService();
+
+  fetch() async {
+    try {
+      final contatosObtidos = await _requisitionService.findTodo();
+      setState(() {
+        contatos = contatosObtidos;
+      });
+    } catch (e) {
+      print('Erro ao buscar contatos: $e');
+      setState(() {
+        contatos = [];
+      });
+    }
+  }
+
+  void _abrirDetalhes(Contato contato, int index) {
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => DetalhesContatoScreen(contato: contato),
-      ),
+      '/detalhesContato',
+      arguments: contatos[index].toJson(),
     );
   }
 
-  void _editarContato(Map<String, dynamic> contato) {
+  void _editarContato(Contato contato, int index) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -49,21 +52,12 @@ class _ListaContatosScreenState extends State<ListaContatosScreen> {
           contato: contato,
           onSave: (contatoAtualizado) {
             setState(() {
-              final index = contatos.indexOf(contato);
-              if (index != -1) {
-                contatos[index] = contatoAtualizado;
-              }
+              contatos[index] = contatoAtualizado;
             });
           },
         ),
       ),
     );
-  }
-
-  void _excluirContato(Map<String, dynamic> contato) {
-    setState(() {
-      contatos.remove(contato);
-    });
   }
 
   @override
@@ -80,35 +74,57 @@ class _ListaContatosScreenState extends State<ListaContatosScreen> {
                 MaterialPageRoute(
                   builder: (context) => const AdicionarContatoScreen(),
                 ),
-              );
+              ).then((value) {
+                if (value != null && value is Contato) {
+                  setState(() {
+                    contatos.add(value);
+                  });
+                }
+              });
             },
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: contatos.length,
-        itemBuilder: (context, index) {
-          final contato = contatos[index];
-          return ListTile(
-            title: Text(contato['nome']),
-            subtitle: Text(contato['Tipo']),
-            onTap: () => _abrirDetalhes(contato),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => _editarContato(contato),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => _excluirContato(contato),
-                ),
-              ],
+      body: contatos.isEmpty
+          ? const Center(
+              child: Text('Nenhum contato'),
+            )
+          : ListView.builder(
+              itemCount: contatos.length,
+              itemBuilder: (context, index) {
+                final contatoAtual = contatos[index];
+                return ListTile(
+                  title: Text(contatoAtual.nome ?? 'Nome não disponível'),
+                  subtitle: Text(
+                    contatoAtual.tipos != null && contatoAtual.tipos!.isNotEmpty
+                        ? contatoAtual.tipos!
+                            .map((tipo) => tipo.nome)
+                            .join(', ')
+                        : 'Nenhum tipo disponível',
+                  ),
+                  onTap: () => _abrirDetalhes(contatoAtual, index),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () => _editarContato(contatoAtual, index),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () async {
+                          await _requisitionService.delete(
+                              id: contatoAtual.id!);
+                          setState(() {
+                            contatos.removeAt(index);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

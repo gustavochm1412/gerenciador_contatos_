@@ -1,4 +1,3 @@
-
 class TipoContato {
   final String nome;
 
@@ -7,36 +6,43 @@ class TipoContato {
   Map<String, dynamic> toJson() => {'nome': nome};
 
   factory TipoContato.fromJson(Map<String, dynamic> json) {
-    return TipoContato(json['nome']);
+    return TipoContato(json['nome'] as String);
   }
 }
 
 class Contato {
-  final String nome;
-  final String email;
-  final String endereco;
-  final List<TipoContato> tipos; 
+  final String? id;
+  final String? nome;
+  final String? email;
+  final String? endereco;
+  final List<TipoContato>? tipos;
 
   Contato({
-    required this.nome,
-    required this.email,
-    required this.endereco,
-    required this.tipos,
+    this.id,
+    this.nome,
+    this.email,
+    this.endereco,
+    this.tipos,
   });
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'nome': nome,
         'email': email,
         'endereco': endereco,
-        'tipos': tipos.map((tipo) => tipo.toJson()).toList(), 
+        'tipos': tipos?.map((tipo) => tipo.toJson()).toList(),
       };
 
   factory Contato.fromJson(Map<String, dynamic> json) {
     return Contato(
-      nome: json['nome'],
-      email: json['email'],
-      endereco: json['endereco'],
-      tipos: List<TipoContato>.from(json['tipos'].map((json) => TipoContato.fromJson(json))), 
+      id: json['id'] as String?,
+      nome: json['nome'] as String?,
+      email: json['email'] as String?,
+      endereco: json['endereco'] as String?,
+      tipos: (json['tipos'] as List<dynamic>?)
+          ?.map((tipoJson) =>
+              TipoContato.fromJson(tipoJson as Map<String, dynamic>))
+          .toList(),
     );
   }
 }
