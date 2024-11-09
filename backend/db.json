@@ -1,0 +1,32 @@
+
+{
+  "contatos": [
+    {
+      "id": 1,
+      "nome": "Gustavo Mesquita",
+      "email": "gustavoteste@gmail.com",
+      "endereco": "Rua HELLO WORD, 123",
+      "tipos": [
+        {"nome": "Primo"}
+      ]
+    },
+    {
+      "id": 2,
+      "nome": "Lucas Calixto",
+      "email": "lucasteste@gmail.com",
+      "endereco": "Rua WORD, 123",
+      "tipos": [
+        {"nome": "Amigo"}
+      ]
+    },
+    {
+      "id": 3,
+      "nome": "Vitor Eije",
+      "email": "vitorteste@gmail.com",
+      "endereco": "Rua HELLO, 456",
+      "tipos": [
+        {"nome": "Amigo"}
+      ]
+    }
+  ]
+}
