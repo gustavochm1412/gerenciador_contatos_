@@ -9,7 +9,7 @@ abstract class AbstractCrudService<T> {
   String getComplemento();
   T getInstance(Map<String, dynamic> item);
 
-  String url = "http://localhost:3040";
+  String url = "http://localhost:3000";
 
   Future<List<T>> findAll() async {
     http.Response retorno =
